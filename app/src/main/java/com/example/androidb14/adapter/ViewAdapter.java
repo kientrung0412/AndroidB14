@@ -46,12 +46,17 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.HolderVIew> {
     @Override
     public void onBindViewHolder(@NonNull HolderVIew holder, int position) {
         final File file = files[position];
+
         holder.bindView(file);
         if (listener != null) {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listener.onClickItem(file);
+                        if (file.isDirectory()){
+                            listener.onClickDirectory(file);
+                        } else {
+                            listener.onClickFile(file);
+                        }
                     }
                 });
         }
@@ -81,16 +86,17 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.HolderVIew> {
             tvName.setText(file.getName());
             tvTime.setText(dateFormat.format(date));
             if (file.isDirectory()) {
-                Glide.with(itemView).load(R.drawable.ic_folder).into(ivIcon);
+                ivIcon.setImageResource(R.drawable.ic_folder);
             } else {
                 tvSize.setText(Formatter.formatFileSize(tvName.getContext(), file.length()));
-                Glide.with(itemView).load(R.drawable.ic_file).into(ivIcon);
+                ivIcon.setImageResource(R.drawable.ic_file);
             }
         }
     }
 
     public interface OnClickItemListener {
-        void onClickItem(File file);
+        void onClickDirectory(File file);
+        void onClickFile(File file);
     }
 
 }
